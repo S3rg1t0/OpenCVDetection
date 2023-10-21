@@ -1596,12 +1596,15 @@
                                        <number>20</number>
                                       </property>
                                       <item row="0" column="0">
-                                       <widget class="QSlider" name="slider_medianblur">
+                                       <widget class="QSlider" name="slider_kernel_medianblur">
                                         <property name="minimum">
                                          <number>1</number>
                                         </property>
                                         <property name="maximum">
-                                         <number>10</number>
+                                         <number>15</number>
+                                        </property>
+                                        <property name="singleStep">
+                                         <number>2</number>
                                         </property>
                                         <property name="orientation">
                                          <enum>Qt::Horizontal</enum>

@@ -126,7 +126,9 @@ class App(QMainWindow):
         self.ui.slider_sigma_gaussian_blur.valueChanged.connect(self.ui.label_sigma_gaussian_blur.setNum)
         self.ui.slider_canny_umbral_alto.valueChanged.connect(self.ui.label_canny_umbral_alto.setNum)
         self.ui.slider_canny_umbral_bajo.valueChanged.connect(self.ui.label_canny_umbral_bajo.setNum)
-        self.ui.slider_medianblur.valuechanged.connect(self.ui.label_medianblur.setNum)
+        self.ui.slider_kernel_medianblur.valueChanged.connect(self.ui.label_medianblur.setNum)
+
+
 
     @Slot(float)
     def label_cpu(self, value):
@@ -154,71 +156,78 @@ class App(QMainWindow):
 
     def update_frame(self, option):
 
-        ret, frame = self.cap.read()
-        if ret:
-            self.area_min = self.ui.dial_area_min.value()
-            self.area_max = self.ui.dial_area_max.value()
+        try:
+            ret, frame = self.cap.read()
+            if ret:
+                self.area_min = self.ui.dial_area_min.value()
+                self.area_max = self.ui.dial_area_max.value()
 
-            if option == 0:
-                frameHSV = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-                maskAzul = cv2.inRange(frameHSV, self.colorBajo, self.colorAlto)
-                self.detector.dibujar_hsv(mask=maskAzul,
-                                          frame=frame,
-                                          area_min=self.area_min,
-                                          area_max=self.area_max,
-                                          button_empty=self.ui.radioButton_sinTexto,
-                                          button_area=self.ui.radioButton_textoArea,
-                                          button_text=self.ui.radioButton_textoCentro,
-                                          track=self.ui.radioButton_trayectoria_on)
-                self.image_pixmap_rgb(frame=frame,
-                                      method=cv2.COLOR_BGR2RGB)
-            elif option == 1:
+                if option == 0:
+                    frameHSV = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+                    maskAzul = cv2.inRange(frameHSV, self.colorBajo, self.colorAlto)
+                    self.detector.dibujar_hsv(mask=maskAzul,
+                                              frame=frame,
+                                              area_min=self.area_min,
+                                              area_max=self.area_max,
+                                              button_empty=self.ui.radioButton_sinTexto,
+                                              button_area=self.ui.radioButton_textoArea,
+                                              button_text=self.ui.radioButton_textoCentro,
+                                              track=self.ui.radioButton_trayectoria_on)
+                    self.image_pixmap_rgb(frame=frame,
+                                          method=cv2.COLOR_BGR2RGB)
+                elif option == 1:
 
-                img_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                    img_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-                if self.ui.radioButton_umbral.isChecked():
-                    self.detector.dibujar_umbral(frame=img_gray,
-                                                 thresh=self.ui.slider_umbral_min.value(),
-                                                 maxval=self.ui.slider_umbral_max.value(),
-                                                 label=self.ui.label_img_umbral,
-                                                 method=self.detector.thresh_types(
-                                                     self.ui.comboBox_umbral.currentIndex()))
-                elif self.ui.radioButton_adapative.isChecked():
-                    self.detector.dibujar_umbral_adapative(frame=img_gray,
-                                                           maxval=self.ui.slider_max_adaptive_umbral.value(),
-                                                           label=self.ui.label_img_umbral,
-                                                           blocksize=int(
-                                                               self.ui.comboBox_blocksize_umbral.currentText()),
-                                                           c=int(self.ui.comboBox_c_umbral.currentText()),
-                                                           adaptive_method=self.detector.adaptive_thresh_types(
-                                                               self.ui.comboBox_adaptive_umbral.currentIndex()),
-                                                           method=self.detector.thresh_types(
-                                                               self.ui.comboBox_umbral.currentIndex()))
+                    if self.ui.radioButton_umbral.isChecked():
+                        self.detector.dibujar_umbral(frame=img_gray,
+                                                     thresh=self.ui.slider_umbral_min.value(),
+                                                     maxval=self.ui.slider_umbral_max.value(),
+                                                     label=self.ui.label_img_umbral,
+                                                     method=self.detector.thresh_types(
+                                                         self.ui.comboBox_umbral.currentIndex()))
+                    elif self.ui.radioButton_adapative.isChecked():
+                        self.detector.dibujar_umbral_adapative(frame=img_gray,
+                                                               maxval=self.ui.slider_max_adaptive_umbral.value(),
+                                                               label=self.ui.label_img_umbral,
+                                                               blocksize=int(
+                                                                   self.ui.comboBox_blocksize_umbral.currentText()),
+                                                               c=int(self.ui.comboBox_c_umbral.currentText()),
+                                                               adaptive_method=self.detector.adaptive_thresh_types(
+                                                                   self.ui.comboBox_adaptive_umbral.currentIndex()),
+                                                               method=self.detector.thresh_types(
+                                                                   self.ui.comboBox_umbral.currentIndex()))
 
-                self.blur_types(img_gray=img_gray,
-                                kernel=self.ui.slider_kernel_blur.value(),
-                                sigma=self.ui.slider_sigma_gaussian_blur.value(),
-                                diameter=0,
-                                sigmacolor=0,
-                                sigmaspace=0)
+                    self.blur_types(img_gray=img_gray,
+                                    kernel_blur=self.ui.slider_kernel_blur.value(),
+                                    kernel_gaussian=self.ui.slider_kernel_gaussian_blur.value(),
+                                    kernel_medianblur=self.ui.slider_kernel_medianblur.value(),
+                                    sigma=self.ui.slider_sigma_gaussian_blur.value(),
+                                    diameter=0,
+                                    sigmacolor=0,
+                                    sigmaspace=0)
 
-                if self.ui.radioButton_canny.isChecked():
-                    kernel = self.ui.slider_kernel_blur.value()
-                    self.detector.dibujar_canny(frame=img_gray,
-                                                kernel=(kernel, kernel),
-                                                umbral_bajo=self.ui.slider_canny_umbral_bajo.value(),
-                                                umbral_alto=self.ui.slider_canny_umbral_alto.value(),
-                                                label=self.ui.label_img_canny,
-                                                imagen=frame,
-                                                indice=self.ui.spinBox_pruebas_contour.value())
+                    if self.ui.radioButton_canny.isChecked():
 
-                if self.ui.radioButton_canny.isChecked():
-                    frame = cv2.cvtColor(src=frame, code=cv2.COLOR_HSV2BGR)
-                    self.image_pixmap_rgb(frame=frame)
-                else:
-                    self.image_pixmap_gray(frame=frame)
-        else:
-            print("No conecta la cámara")
+                        self.detector.dibujar_canny(frame=img_gray,
+                                                    kernel=self.ui.slider_kernel_blur.value(),
+                                                    umbral_bajo=self.ui.slider_canny_umbral_bajo.value(),
+                                                    umbral_alto=self.ui.slider_canny_umbral_alto.value(),
+                                                    label=self.ui.label_img_canny,
+                                                    imagen=frame,
+                                                    indice=self.ui.spinBox_pruebas_contour.value())
+
+                    if self.ui.radioButton_canny.isChecked():
+                        frame = cv2.cvtColor(src=frame, code=cv2.COLOR_HSV2BGR)
+                        self.image_pixmap_rgb(frame=frame)
+                    else:
+                        self.image_pixmap_gray(frame=frame)
+            else:
+                print("No conecta la cámara")
+                self.cap.release()
+
+        except Exception as e:
+            print(e)
 
     def image_pixmap_rgb(self, frame, method=cv2.COLOR_BGR2HSV):
 
@@ -273,28 +282,30 @@ class App(QMainWindow):
         elif self.ui.radioButton_adapative.isChecked():
             self.ui.stackedWidget_umbral.setCurrentIndex(1)
 
-    def blur_types(self, img_gray, kernel, sigma, diameter, sigmacolor, sigmaspace):
+    def blur_types(self, img_gray, kernel_blur, kernel_gaussian, kernel_medianblur, sigma, diameter,
+                   sigmacolor, sigmaspace):
 
         selection = self.ui.comboBox_blur_types.currentText()
 
         if selection == "BLUR":
             self.detector.dibujar_blur(frame=img_gray,
-                                       kernel=(kernel, kernel),
+                                       kernel=kernel_blur,
                                        label=self.ui.label_img_blur)
         elif selection == "GAUSSIAN BLUR":
             self.detector.dibujar_gaussian_blur(frame=img_gray,
-                                                kernel=(kernel, kernel),
+                                                kernel=kernel_gaussian,
                                                 sigma=sigma,
                                                 label=self.ui.label_img_blur)
         elif selection == "MEDIANBLUR":
             self.detector.dibujar_median_blur(frame=img_gray,
-                                              kernel=(kernel, kernel),
+                                              kernel=kernel_medianblur,
                                               label=self.ui.label_img_blur)
         elif selection == "BILATERAL":
             self.detector.dibujar_bilateral_blur(frame=img_gray,
                                                  diameter=diameter,
                                                  sigmacolor=sigmacolor,
                                                  sigmaspace=sigmaspace)
+
 
 
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'interfacelRjgMT.ui'
+## Form generated from reading UI file 'interfaceFMWpvj.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -759,13 +759,14 @@ class Ui_MainWindow(object):
         self.gridLayout_10.setObjectName(u"gridLayout_10")
         self.gridLayout_10.setHorizontalSpacing(50)
         self.gridLayout_10.setVerticalSpacing(20)
-        self.slider_medianblur = QSlider(self.frame_30)
-        self.slider_medianblur.setObjectName(u"slider_medianblur")
-        self.slider_medianblur.setMinimum(1)
-        self.slider_medianblur.setMaximum(10)
-        self.slider_medianblur.setOrientation(Qt.Horizontal)
+        self.slider_kernel_medianblur = QSlider(self.frame_30)
+        self.slider_kernel_medianblur.setObjectName(u"slider_kernel_medianblur")
+        self.slider_kernel_medianblur.setMinimum(1)
+        self.slider_kernel_medianblur.setMaximum(15)
+        self.slider_kernel_medianblur.setSingleStep(2)
+        self.slider_kernel_medianblur.setOrientation(Qt.Horizontal)
 
-        self.gridLayout_10.addWidget(self.slider_medianblur, 0, 0, 1, 1)
+        self.gridLayout_10.addWidget(self.slider_kernel_medianblur, 0, 0, 1, 1)
 
         self.label_medianblur = QLabel(self.frame_30)
         self.label_medianblur.setObjectName(u"label_medianblur")

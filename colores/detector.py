@@ -109,7 +109,7 @@ class DetectorColor:
     def dibujar_blur(frame, kernel, label=None):
 
         img_blur = cv2.blur(src=frame,
-                            ksize=kernel)
+                            ksize=(kernel, kernel))
 
         h, w = img_blur.shape
         qt_image = QImage(img_blur.data, w, h, w,
@@ -119,17 +119,23 @@ class DetectorColor:
     @staticmethod
     def dibujar_gaussian_blur(frame, kernel, sigma=0, label=None):
 
+        if kernel % 2 == 0:
+            kernel += 1
+
         img_blur = cv2.GaussianBlur(src=frame,
-                                    ksize=kernel,
+                                    ksize=(kernel, kernel),
                                     sigmaX=sigma)
 
         h, w = img_blur.shape
         qt_image = QImage(img_blur.data, w, h, w,
-                          QImage.Format_Grayscale8)  # Ojo con la 16 que es mucho mas precisa y escala hasta 650000 Grayscale16
+                          QImage.Format_Grayscale8)  # Ojo con la 16 que es mucho más precisa y escala hasta 650000 Grayscale16
         label.setPixmap(QPixmap.fromImage(qt_image).scaled(300, 200, Qt.KeepAspectRatio))
 
     @staticmethod
     def dibujar_median_blur(frame, kernel, label=None):
+
+        if kernel % 2 == 0:
+            kernel += 1
 
         img_blur = cv2.medianBlur(src=frame,
                                   ksize=kernel)
@@ -156,7 +162,7 @@ class DetectorColor:
     def dibujar_canny(frame, kernel, umbral_bajo, umbral_alto, label, imagen, indice):
 
         img_blur = cv2.blur(src=frame,
-                            ksize=kernel)
+                            ksize=(kernel, kernel))
 
         canny = cv2.Canny(image=img_blur,
                           threshold1=umbral_bajo,
@@ -174,5 +180,5 @@ class DetectorColor:
         cv2.drawContours(image=imagen,
                          contours=contornos,
                          contourIdx=indice,
-                         color=(255, 255, 0),
+                         color=(0, 0, 126),
                          thickness=2)
