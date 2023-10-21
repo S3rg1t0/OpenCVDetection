@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="iconos">
+    <file>btn_apagar.png</file>
+    <file>btn_encender.png</file>
+  </qresource>
+</RCC>
